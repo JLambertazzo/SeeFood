@@ -148,6 +148,7 @@ class Items(Resource):
 
 
 class NewRestaurant(Resource):
+    @marshal_with(restaurant_fields)
     def post(self):
         args = restaurant_put_args.parse_args()
         found = RestaurantModel.query.filter_by(name=args['name']).first()
@@ -159,9 +160,10 @@ class NewRestaurant(Resource):
         db.session.add(restaurant)
         db.session.commit()
         session['name'] = args['name']
-        return redirect("/dashboard", 301)
+        return restaurant, 201
 
     # handle login
+    @marshal_with(restaurant_fields)
     def get(self):
         args = restaurant_put_args.parse_args()
         found = RestaurantModel.query.filter_by(name=args['name']).first()
@@ -172,7 +174,7 @@ class NewRestaurant(Resource):
         given_hash = hashlib.pbkdf2_hmac('sha256', args['password'].encode('utf-8'), found_salt, 100000)
         if given_hash == found_key:
             session['name'] = args['name']
-            return redirect("/dashboard", 301)
+            return found
         else:
             abort(403, message="Login Failed") 
 
@@ -181,6 +183,9 @@ class NewItem(Resource):
     @marshal_with(item_fields)
     def post(self):
         args = item_put_args.parse_args()
+        found = ItemModel.query.filter_by(restaurant=args['restaurant'], name=args['name'])
+        if found:
+            abort(409, message="You already have an item with this name")
         item = ItemModel(id=str(uuid.uuid1()), restaurant=args['restaurant'], name=args['name'], description=args['description'],
         ingredients=args['ingredients'], image=args['image'], qr=args['qr'])
         db.session.add(item)
@@ -203,6 +208,13 @@ def dashboard():
     found = RestaurantModel.query.filter_by(name=session['name']).first()
     items = ItemModel.query.filter_by(id=found.id).all()
     return render_template('dashboard.html', name=found.name, description=found.description, items=items)
+
+@app.route('/newitem')
+def newitempage():
+    if not session['name']:
+        return redirect('/', 301)
+    found = RestaurantModel.query.filter_by(name=session['name']).first()
+    return render_template('newitem.html', rest_id=found.id)
 
 if __name__ == '__main__':
     app.run(debug=True)
