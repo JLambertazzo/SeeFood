@@ -13,7 +13,7 @@
         <button onclick="handleShowUserRegister()">Register as a User</button>
         <p>Already have an account? <a href="javascript:;" onclick="handleShowRestLogin()">Log In</a></p>
       </div>
-      <form class="rest-register hide">
+      <form class="rest-register hide" action="/api/restaurants" method="POST">
         <button onclick="handleHideRestRegister()">&lt; back</button>
         <label for="name">Restaurant Name:</label>
         <input type="text" name="name" required />
@@ -23,15 +23,13 @@
         <input type="password" name="password" required />
         <input type="submit" value="Register" />
       </form>
-      <form class="rest-login hide">
+      <form class="rest-login hide" action="/api/restaurants" method="GET">
         <button onclick="handleHideRestLogin()">&lt; back</button>
         <label for="name">Restaurant Name:</label>
         <input type="text" name="name" required />
-        <label for="description">Restaurant Description:</label>
-        <textarea name="description" required></textarea>
         <label for="password">Password:</label>
         <input type="password" name="password" required />
-        <input type="submit" value="Register" />
+        <input type="submit" value="Login" />
       </form>
     </div>
 {% endblock %}

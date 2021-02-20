@@ -6,10 +6,12 @@ BASE = "http://127.0.0.1:5000/"
 # create two restaurants
 response = requests.put(BASE + "api/restaurants", {
   "name": "my restaurant",
+  "password": "mypassword",
   "description": "description of my restaurant"
 })
 other_response = requests.put(BASE + "api/restaurants", {
   "name": "my other restaurant",
+  "password": "otherpassword",
   "description": "description of my restaurant"
 })
 rest_id = response.json()['id']
@@ -22,6 +24,13 @@ response2 = requests.patch(BASE + f"api/restaurants/{rest_id}", {
   "description": "new updated description"
 })
 print(response2.json())
+
+# try logging in as the restaurant
+response21 = requests.get(BASE + "api/restaurants", {
+  "name": "updated restaurant",
+  "password": "mypassword"
+})
+print('login attempt gives us:' + response21.json()['id'])
 
 # delete the restaurant
 response3 = requests.delete(BASE + f"api/restaurants/{rest_id}")
