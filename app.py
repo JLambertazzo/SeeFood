@@ -13,11 +13,11 @@ class RestaurantModel(db.Model):
     description = db.Column(db.String(500))
 
     def __repr__(self):
-        return f"Restaurant(name={name}, description={description})"
+        return f"Restaurant(name={self.name}, description={self.description})"
 
 class ItemModel(db.Model):
     id = db.Column(db.String(100), primary_key=True)
-    resturant = db.Column(db.String(100), nullable=False)
+    restaurant = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(500))
     ingredients = db.Column(db.String(500))
@@ -25,7 +25,7 @@ class ItemModel(db.Model):
     qr = db.Column(db.String(500))
 
     def __repr__(self):
-        return f"Item(restaurant={restaurant}, name={name}, description={description}, ingredients={ingredients}, image={image}, qr={qr})"
+        return f"Item(restaurant={self.restaurant}, name={self.name}, description={self.description}, ingredients={self.ingredients}, image={self.image}, qr={self.qr})"
 
 
 db.create_all()
@@ -84,8 +84,10 @@ class Restaurants(Resource):
         result = RestaurantModel.query.filter_by(id=id).first()
         if not result:
             abort(404, message="restaurant not found")
-        for arg in args:
-            result[arg] = args[arg]
+        if args['name']:
+            result.name = args['name']
+        if args['description']:
+            result.description = args['description']
         db.session.commit()
         return result
 
@@ -94,9 +96,9 @@ class Restaurants(Resource):
         result = RestaurantModel.query.filter_by(id=id).first()
         if not result:
             abort(404, message="restaurant not found")
-        db.session.remove(result)
+        db.session.delete(result)
         db.session.commit()
-        return result 
+        return result
         
 
 class Items(Resource):
@@ -110,11 +112,17 @@ class Items(Resource):
     @marshal_with(item_fields)
     def patch(self, id):
         args = item_patch_args.parse_args()
-        result = ItemModel.query.filter_by(id=id)
+        result = ItemModel.query.filter_by(id=id).first()
         if not result:
             abort(404, message="item not found")
-        for arg in args:
-            result[arg] = args[arg]
+        if args['name']:
+            result.name = args['name']
+        if args['description']:
+            result.description = args['description']
+        if args['ingredients']:
+            result.ingredients = args['ingredients']
+        if args['image']:
+            result.image = args['image']
         db.session.commit()
         return result
 
@@ -123,6 +131,8 @@ class Items(Resource):
         result = ItemModel.query.filter_by(id=id).first()
         if not result:
             abort(404, message="item not found")
+        db.session.delete(result)
+        db.session.commit()
         return result
 
 
