@@ -2,13 +2,36 @@
 
 {% block head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <script src="{{ url_for('static', filename='js/index.js') }}"></script>
   <title>SeeFood</title>
 {% endblock %}
 
 {% block body %}
     <div class="content">
-      <button>Register as a Restaurant</button>
-      <button>Register as a User</button>
-      <p>Already have an account? <a href="#">Log In</a></p>
+      <div class="control">
+        <button onclick="handleShowRestRegister()">Register as a Restaurant</button>
+        <button onclick="handleShowUserRegister()">Register as a User</button>
+        <p>Already have an account? <a href="javascript:;" onclick="handleShowRestLogin()">Log In</a></p>
+      </div>
+      <form class="rest-register hide">
+        <button onclick="handleHideRestRegister()">&lt; back</button>
+        <label for="name">Restaurant Name:</label>
+        <input type="text" name="name" required />
+        <label for="description">Restaurant Description:</label>
+        <textarea name="description" required></textarea>
+        <label for="password">Password:</label>
+        <input type="password" name="password" required />
+        <input type="submit" value="Register" />
+      </form>
+      <form class="rest-login hide">
+        <button onclick="handleHideRestLogin()">&lt; back</button>
+        <label for="name">Restaurant Name:</label>
+        <input type="text" name="name" required />
+        <label for="description">Restaurant Description:</label>
+        <textarea name="description" required></textarea>
+        <label for="password">Password:</label>
+        <input type="password" name="password" required />
+        <input type="submit" value="Register" />
+      </form>
     </div>
 {% endblock %}
