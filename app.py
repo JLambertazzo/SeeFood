@@ -1,9 +1,13 @@
-from flask import Flask, render_template, redirect, session
+from flask import Flask, render_template, redirect, session, Response
 from flask_restful import Api, Resource, reqparse, fields, marshal_with, abort
 from flask_sqlalchemy import SQLAlchemy
+from qrcode.image.pure import PymagingImage
+import werkzeug
+from werkzeug.utils import secure_filename
 import uuid
 import hashlib
 import os
+import qrcode
 app = Flask(__name__)
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -31,6 +35,14 @@ class ItemModel(db.Model):
     def __repr__(self):
         return f"Item(restaurant={self.restaurant}, name={self.name}, description={self.description}, ingredients={self.ingredients}, image={self.image}, qr={self.qr})"
 
+class ImageModel(db.Model):
+    id = db.Column(db.String(100), primary_key=True)
+    image = db.Column(db.String(500), unique=True)
+    mimetype = db.Column(db.String(500), nullable=False)
+    name = db.Column(db.String(500), nullable=False)
+
+    def __repr__(self):
+        return self.name
 
 db.create_all()
 
@@ -49,7 +61,7 @@ item_put_args.add_argument("restaurant", required=True, type=str, help='Restaura
 item_put_args.add_argument("name", required=True, type=str, help='Item name was not included')
 item_put_args.add_argument("description", type=str)
 item_put_args.add_argument("ingredients", type=str)
-item_put_args.add_argument("image", type=str)
+item_put_args.add_argument("image", type=werkzeug.datastructures.FileStorage, location='files')
 item_put_args.add_argument("qr", type=str)
 
 item_patch_args = reqparse.RequestParser()
@@ -57,7 +69,7 @@ item_patch_args.add_argument("restaurant", type=str)
 item_patch_args.add_argument("name", type=str)
 item_patch_args.add_argument("description", type=str)
 item_patch_args.add_argument("ingredients", type=str)
-item_patch_args.add_argument("image", type=str)
+item_patch_args.add_argument("image", type=werkzeug.datastructures.FileStorage, location='files')
 item_patch_args.add_argument("qr", type=str)
 
 restaurant_fields = {
@@ -126,14 +138,20 @@ class Items(Resource):
         result = ItemModel.query.filter_by(id=id).first()
         if not result:
             abort(404, message="item not found")
+        image = args['image']
+        if args['image']:
+            filename = secure_filename(args['image'].filename)
+            mimetype = args['image'].mimetype
+            image = args['image'].read()
+            img = ImageModel(image=image, mimetype=mimetype, name=filename)
         if args['name']:
             result.name = args['name']
         if args['description']:
             result.description = args['description']
         if args['ingredients']:
             result.ingredients = args['ingredients']
-        if args['image']:
-            result.image = args['image']
+        if image:
+            result.image = image
         db.session.commit()
         return result
 
@@ -186,16 +204,40 @@ class NewItem(Resource):
         found = ItemModel.query.filter_by(restaurant=args['restaurant'], name=args['name']).first()
         if found:
             abort(409, message="You already have an item with this name")
+        image = args['image']
+        if args['image']:
+            filename = secure_filename(args['image'].filename)
+            mimetype = args['image'].mimetype
+            image = args['image'].read()
+            newimage = ImageModel(id=str(uuid.uuid1()), image=image, mimetype=mimetype, name=filename)
+            db.session.add(newimage)
+
         item = ItemModel(id=str(uuid.uuid1()), restaurant=args['restaurant'], name=args['name'], description=args['description'],
-        ingredients=args['ingredients'], image=args['image'], qr=args['qr'])
+        ingredients=args['ingredients'], image=image, qr=args['qr'])
         db.session.add(item)
         db.session.commit()
         return item, 201
+
+class Image(Resource):
+    def get(self, id):
+        found = ImageModel.query.filter_by(id=id).first()
+        if not found:
+            abort(404, message="image could not be found")
+        return Response(found.image, mimetype=found.mimetype)
+
+class QR(Resource):
+    def get(self, id):
+        img = qrcode.make(f"http://localhost:5000/viewitem/{id}", image_factory=PymagingImage)
+        return Response(img)
+        
+        
 
 api.add_resource(NewRestaurant, '/api/restaurants')
 api.add_resource(NewItem, '/api/item')
 api.add_resource(Restaurants, '/api/restaurants/<string:id>')
 api.add_resource(Items, '/api/item/<string:id>')
+api.add_resource(Image, '/api/image/<string:id>')
+api.add_resource(QR, '/api/qr/<string:id>')
 
 @app.route('/')
 def index():
@@ -215,6 +257,18 @@ def newitempage():
         return redirect('/', 301)
     found = RestaurantModel.query.filter_by(name=session['name']).first()
     return render_template('newitem.html', rest_id=found.id)
+
+@app.route('/viewitem/<string:id>')
+def viewitempage(id):
+    found = ItemModel.query.filter_by(id=id).first()
+    if not found:
+        abort(404, message="Item was not found")
+    image = ImageModel.query.filter_by(image=found.image).first()
+    if not image:
+        abort(404, message="Error loading image")
+    return render_template('viewitem.html', mimetype=image.mimetype, image=f"/api/image/{image.id}", qr=f"/api/qr/{id}", name=found.name, description=found.description, ingredients=found.ingredients)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

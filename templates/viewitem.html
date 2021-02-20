@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>{{ name }}</title>
+{% endblock %}
+
+{% block body%}
+  <div class="content">
+    <img src="{{ image }}" alt="item image">
+    <img src="{{ qr }}" alt="qr code for this page">
+    <h1>{{ name }}</h1>
+    <h2>{{ description }}</h2>
+    <h3>{{ ingredients }}</h3>
+  </div>
+{% endblock %}

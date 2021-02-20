@@ -23,6 +23,7 @@ const handleShowUserRegister = () => {
 }
 
 document.querySelector('.rest-register').addEventListener('submit', (event) => {
+  event.preventDefault()
   const data = new FormData(event.target)
   const request = new Request('/api/restaurants', {
     method: 'post',
@@ -46,6 +47,7 @@ document.querySelector('.rest-register').addEventListener('submit', (event) => {
 })
 
 document.querySelector('.rest-login').addEventListener('submit', (event) => {
+  event.preventDefault()
   const data = new FormData(event.target)
   const request = new Request('/api/restaurants', {
     method: 'post',
