@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <title>Dashboard</title>
+{% endblock %}
+
+{% block body %}
+  <div class="content">
+    <div class="content-left">
+      <img src="https://via.placeholder.com/150" alt="profile picture">
+      <h1>{{ name }}</h1>
+      <h2>{{ description }}</h2>
+    </div>
+    <span></span>
+    <div class="content-right">
+      <h1>Items:</h1>
+      <ul>
+        {% for item in items %}
+          <li>Name: {{ item.name }}, Description: {{ item.description }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endblock %}

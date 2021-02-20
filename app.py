@@ -193,8 +193,16 @@ api.add_resource(Restaurants, '/api/restaurants/<string:id>')
 api.add_resource(Items, '/api/item/<string:id>')
 
 @app.route('/')
-def hello():
+def index():
     return render_template('index.html')
+
+@app.route('/dashboard')
+def dashboard():
+    if not session['name']:
+        return redirect('/', 301)
+    found = RestaurantModel.query.filter_by(name=session['name']).first()
+    items = ItemModel.query.filter_by(id=found.id).all()
+    return render_template('dashboard.html', name=found.name, description=found.description, items=items)
 
 if __name__ == '__main__':
     app.run(debug=True)
