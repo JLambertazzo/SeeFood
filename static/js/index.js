@@ -21,3 +21,48 @@ const handleHideRestLogin = () => {
 const handleShowUserRegister = () => {
   alert('Coming Soon!')
 }
+
+document.querySelector('.rest-register').addEventListener('submit', (event) => {
+  const data = new FormData(event.target)
+  const request = new Request('/api/restaurants', {
+    method: 'post',
+    body: JSON.stringify({
+      name: data.get('name'),
+      description: data.get('description'),
+      password: data.get('password')
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+
+  fetch(request).then(res => {
+    if (res.ok) {
+      window.location.replace('/dashboard')
+    } else {
+      alert('ERROR WITH REGISTRATION')
+    }
+  }).catch(error => console.log(error))
+})
+
+document.querySelector('.rest-login').addEventListener('submit', (event) => {
+  const data = new FormData(event.target)
+  const request = new Request('/api/restaurants', {
+    method: 'post',
+    body: JSON.stringify({
+      name: data.get('name'),
+      password: data.get('password')
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+
+  fetch(request).then(res => {
+    if (res.ok) {
+      window.location.replace('/dashboard')
+    } else {
+      alert('ERROR WITH LOGIN')
+    }
+  }).catch(error => console.log(error))
+})

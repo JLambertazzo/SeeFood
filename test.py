@@ -1,16 +1,17 @@
 import requests
 import uuid
+import qrcode
 
 BASE = "http://127.0.0.1:5000/"
 
 # create two restaurants
-response = requests.put(BASE + "api/restaurants", {
-  "name": "my restaurant",
+response = requests.post(BASE + "api/restaurants", {
+  "name": "my aaaaaaarestaurant",
   "password": "mypassword",
   "description": "description of my restaurant"
 })
-other_response = requests.put(BASE + "api/restaurants", {
-  "name": "my other restaurant",
+other_response = requests.post(BASE + "api/restaurants", {
+  "name": "my aaaaaaaother restaurant",
   "password": "otherpassword",
   "description": "description of my restaurant"
 })
@@ -43,9 +44,9 @@ print(response4.json())
 print('==== END OF RESTAURANT TESTS ====')
 
 # create meal
-item_response = requests.put(BASE + f"api/item", {
+item_response = requests.post(BASE + f"api/item", {
   "restaurant": other_rest_id,
-  "name": "a meal",
+  "name": "aaaaameal",
   "description": "a description",
   "ingredients": "an ingredient",
 })

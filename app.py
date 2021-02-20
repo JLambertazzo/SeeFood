@@ -183,7 +183,7 @@ class NewItem(Resource):
     @marshal_with(item_fields)
     def post(self):
         args = item_put_args.parse_args()
-        found = ItemModel.query.filter_by(restaurant=args['restaurant'], name=args['name'])
+        found = ItemModel.query.filter_by(restaurant=args['restaurant'], name=args['name']).first()
         if found:
             abort(409, message="You already have an item with this name")
         item = ItemModel(id=str(uuid.uuid1()), restaurant=args['restaurant'], name=args['name'], description=args['description'],
@@ -206,7 +206,7 @@ def dashboard():
     if not session['name']:
         return redirect('/', 301)
     found = RestaurantModel.query.filter_by(name=session['name']).first()
-    items = ItemModel.query.filter_by(id=found.id).all()
+    items = ItemModel.query.filter_by(restaurant=found.id).all()
     return render_template('dashboard.html', name=found.name, description=found.description, items=items)
 
 @app.route('/newitem')

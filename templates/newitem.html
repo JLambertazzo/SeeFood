@@ -8,7 +8,7 @@
 
 {% block body %}
     <form class="content" method="POST" action="/api/item">
-      <input disabled type="text" style="display: none;" name="restaurant" value="{{ rest_id }}">
+      <input type="text" style="display: none;" name="restaurant" value="{{ rest_id }}">
       <label for="name">Item Name:</label>
       <input type="text" name="name" id="name-input" required>
       <label for="description">Description:</label>
