@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="See more info about the food you love at your favourite restaurants">
+  <meta name="author" content="Julien Bertazzo Lambert">
+  <meta name="keywords" content="UofT, UofTHacks, Julien, Bertazzo, Lambert, Food, Flask, Restaurants, Computer Science, HTML, CSS, JavaScript, React, Java, Python">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <nav><h1>SeeFood</h1></nav>
+  <main>
+    {% block body %}{% endblock %}
+  </main>
+  <footer>
+    <h6>Created by <a href="https://www.julienbl.me">Julien Bertazzo Lambert</a> for <a href="https://uofthacks.com/">UofTHacks 2021</a></h6>
+  </footer>
+</body>
+</html>

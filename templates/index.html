@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <title>SeeFood</title>
+{% endblock %}
+
+{% block body %}
+    <div class="content">
+      <button>Register as a Restaurant</button>
+      <button>Register as a User</button>
+      <p>Already have an account? <a href="#">Log In</a></p>
+    </div>
+{% endblock %}

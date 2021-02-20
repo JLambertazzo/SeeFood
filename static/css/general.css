@@ -1,0 +1,18 @@
+body {
+  display: grid;
+  grid-template-rows: 100px auto 50px;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+}
+
+nav, footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+main {
+  display: grid;
+  place-items: center;
+}
