@@ -8,16 +8,15 @@
 {% block body %}
   <div class="content">
     <div class="content-left">
-      <img src="https://via.placeholder.com/150" alt="profile picture">
-      <h1>{{ name }}</h1>
-      <h2>{{ description }}</h2>
+      <h1>Restaurant:<br>{{ name }}</h1>
+      <h2>Description:<br>{{ description }}</h2>
     </div>
     <span></span>
     <div class="content-right">
       <h1>Items:</h1>
       <ul>
         {% for item in items %}
-          <li>Name: {{ item.name }}, Description: {{ item.description }}</li>
+          <li>Name: {{ item.name }}, Description: {{ item.description }} <a href="/viewitem/{{ item.id }}">view</a></li>
         {% endfor %}
       </ul>
       <a href='/newitem'>Add Item</a>

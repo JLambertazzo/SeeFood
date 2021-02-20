@@ -1,8 +1,8 @@
 document.querySelector('.content').addEventListener('submit', (event) => {
   event.preventDefault()
   const data = new FormData(event.target)
-  file = document.querySelector('#image-input').files[0]
-  data.append('itemimg', file, 'filename')
+  const file = document.querySelector('#image-input').files[0]
+  data.append('image', file, 'filename')
   const request = new Request('/api/item', {
     method: 'post',
     body: data

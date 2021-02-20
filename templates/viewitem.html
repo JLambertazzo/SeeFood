@@ -1,15 +1,25 @@
 {% extends 'base.html' %}
 
 {% block head %}
+  <script src="{{ url_for('static', filename='js/viewitem.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/viewitem.css') }}">
   <title>{{ name }}</title>
 {% endblock %}
 
 {% block body%}
   <div class="content">
-    <img src="{{ image }}" alt="item image">
-    <img src="{{ qr }}" alt="qr code for this page">
-    <h1>{{ name }}</h1>
-    <h2>{{ description }}</h2>
-    <h3>{{ ingredients }}</h3>
+    <div class="content-left">
+      <img class="image" src="{{ image }}" alt="item image">
+      <img class="qr hide" src="{{ qr }}" alt="qr code for this page">
+      <button onclick="handleImgToggle()">switch</button>
+    </div>
+    <span></span>
+    <div class="content-right">
+      <h1>Item Info</h1>
+      <h2>Item:<br>{{ name }}</h2>
+      <h3>Description:<br>{{ description }}</h3>
+      <h4>Ingredients:<br>{{ ingredients }}</h4>
+      <a href="/dashboard">&lt; back</a>
+    </div>
   </div>
 {% endblock %}

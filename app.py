@@ -1,13 +1,14 @@
-from flask import Flask, render_template, redirect, session, Response
+from flask import Flask, render_template, redirect, session, Response, send_file
 from flask_restful import Api, Resource, reqparse, fields, marshal_with, abort
 from flask_sqlalchemy import SQLAlchemy
-from qrcode.image.pure import PymagingImage
-import werkzeug
 from werkzeug.utils import secure_filename
+import werkzeug
 import uuid
 import hashlib
 import os
 import qrcode
+import PIL
+import io
 app = Flask(__name__)
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -204,16 +205,20 @@ class NewItem(Resource):
         found = ItemModel.query.filter_by(restaurant=args['restaurant'], name=args['name']).first()
         if found:
             abort(409, message="You already have an item with this name")
-        image = args['image']
+        print('args:' + str(args))
+        iid = None
         if args['image']:
             filename = secure_filename(args['image'].filename)
             mimetype = args['image'].mimetype
-            image = args['image'].read()
-            newimage = ImageModel(id=str(uuid.uuid1()), image=image, mimetype=mimetype, name=filename)
+            iid = str(uuid.uuid1())
+            newimage = ImageModel(id=iid, image=args['image'].read(), mimetype=mimetype, name=filename)
             db.session.add(newimage)
+        else:
+            print('no image given')
 
         item = ItemModel(id=str(uuid.uuid1()), restaurant=args['restaurant'], name=args['name'], description=args['description'],
-        ingredients=args['ingredients'], image=image, qr=args['qr'])
+        ingredients=args['ingredients'], image=iid, qr=args['qr'])
+        print('new item:' + item.id)
         db.session.add(item)
         db.session.commit()
         return item, 201
@@ -227,8 +232,14 @@ class Image(Resource):
 
 class QR(Resource):
     def get(self, id):
-        img = qrcode.make(f"http://localhost:5000/viewitem/{id}", image_factory=PymagingImage)
-        return Response(img)
+        img = qrcode.make(f"http://localhost:5000/viewitem/{id}")
+        print(type(img))
+        image = img.get_image()
+        output = io.BytesIO()
+        image.convert('RGBA').save(output, format='PNG')
+        output.seek(0, 0)
+
+        return Response(output, mimetype="image/png")
         
         
 
@@ -263,7 +274,8 @@ def viewitempage(id):
     found = ItemModel.query.filter_by(id=id).first()
     if not found:
         abort(404, message="Item was not found")
-    image = ImageModel.query.filter_by(image=found.image).first()
+    print(found.image)
+    image = ImageModel.query.filter_by(id=found.image).first()
     if not image:
         abort(404, message="Error loading image")
     return render_template('viewitem.html', mimetype=image.mimetype, image=f"/api/image/{image.id}", qr=f"/api/qr/{id}", name=found.name, description=found.description, ingredients=found.ingredients)

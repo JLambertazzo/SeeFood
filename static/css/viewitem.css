@@ -1,0 +1,37 @@
+img {
+  width: 300px;
+  height: 300px;
+  margin: 5px;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 25px 1fr;
+  height: 100%;
+}
+
+.content div {
+  padding: 10px;
+  margin: 10px;
+  background: black;
+  color: white;
+}
+
+.content-left {
+  grid-column: 1;
+  height: min-content;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-right {
+  height: min-content;
+}
+
+.content-right h1 {
+  text-align: center;
+}
+
+.hide {
+  display: none !important;
+}
