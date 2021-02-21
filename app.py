@@ -1,6 +1,8 @@
 from flask import Flask, render_template, redirect, session, Response, send_file
 from flask_restful import Api, Resource, reqparse, fields, marshal_with, abort
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine, Column, String
+from sqlalchemy.ext.declarative import declarative_base
 from werkzeug.utils import secure_filename
 import werkzeug
 import uuid
@@ -12,11 +14,19 @@ import io
 import requests
 app = Flask(__name__)
 api = Api(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SECRET_KEY'] = 'TEMPORARYSECRET'
-db = SQLAlchemy(app)
+local = False
+Base = None
+if local:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+    db = SQLAlchemy(app)
+    Base = db.Model
+else:
+    Base = declarative_base()
+    engine = create_engine('cockroachdb://julien@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full&sslrootcert=cert/cc-ca.crt&options=--cluster=good-bat-867', echo=True)
 
-class RestaurantModel(db.Model):
+class RestaurantModel(Base):
+    __tablename__ = 'Restaurants'
     id = db.Column(db.String(100), primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
@@ -25,7 +35,8 @@ class RestaurantModel(db.Model):
     def __repr__(self):
         return f"Restaurant(name={self.name}, description={self.description})"
 
-class ItemModel(db.Model):
+class ItemModel(Base):
+    __tablename__ = 'Items'
     id = db.Column(db.String(100), primary_key=True)
     restaurant = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(100), nullable=False)
@@ -37,7 +48,8 @@ class ItemModel(db.Model):
     def __repr__(self):
         return f"Item(restaurant={self.restaurant}, name={self.name}, description={self.description}, ingredients={self.ingredients}, image={self.image}, qr={self.qr})"
 
-class ImageModel(db.Model):
+class ImageModel(Base):
+    __tablename__ = 'Images'
     id = db.Column(db.String(100), primary_key=True)
     image = db.Column(db.String(500), unique=True)
     mimetype = db.Column(db.String(500), nullable=False)
@@ -46,7 +58,10 @@ class ImageModel(db.Model):
     def __repr__(self):
         return self.name
 
-db.create_all()
+if local:
+    db.create_all()
+else:
+    Base.metadata.create_all(engine)
 
 restaurant_post_args = reqparse.RequestParser()
 restaurant_post_args.add_argument("name", required=True, type=str, help="Restaurant name was not included")
