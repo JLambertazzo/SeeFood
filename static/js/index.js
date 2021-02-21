@@ -18,10 +18,6 @@ const handleHideRestLogin = () => {
   document.querySelector('.rest-login').classList.add('hide')
 }
 
-const handleShowUserRegister = () => {
-  alert('Coming Soon!')
-}
-
 document.querySelector('.rest-register').addEventListener('submit', (event) => {
   event.preventDefault()
   const data = new FormData(event.target)

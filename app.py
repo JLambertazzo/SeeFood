@@ -9,6 +9,7 @@ import os
 import qrcode
 import PIL
 import io
+import requests
 app = Flask(__name__)
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -212,6 +213,20 @@ class NewItem(Resource):
             iid = str(uuid.uuid1())
             newimage = ImageModel(id=iid, image=args['image'].read(), mimetype=mimetype, name=filename)
             db.session.add(newimage)
+            # upload to echoAR
+            response = requests.post('https://console.echoAR.xyz/upload', data={
+                "key": "solitary-smoke-3045",
+                "email": "jbertazzolambert@gmail.com",
+                "target_type": 0,
+                "hologram_type": 1,
+                "file_image": args['image']
+            }, headers={
+                "Content-Type": "multipart/form-data"
+            })
+            if response.ok:
+                print('successfully sent to echoAR')
+            else:
+                print(response)
         else:
             print('no image given')
 
