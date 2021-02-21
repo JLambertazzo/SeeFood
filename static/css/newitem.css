@@ -6,3 +6,11 @@
   background: #f0f0f0;
   box-shadow: #e0e0e0 2px 2px 2px 0;
 }
+
+.content * {
+  margin: 5px 0;
+}
+
+.content label {
+  color: white;
+}

@@ -7,7 +7,7 @@
 {% endblock%}
 
 {% block body %}
-    <form class="content" method="POST" action="/api/item">
+    <form class="content bg-secondary" method="POST" action="/api/item">
       <input type="text" style="display: none;" name="restaurant" value="{{ rest_id }}">
       <label for="name">Item Name:</label>
       <input type="text" name="name" id="name-input" required>
@@ -17,6 +17,6 @@
       <textarea type="text" name="ingredients" id="ing-input"></textarea>
       <label for="image">Picture of the Meal:</label>
       <input type="file" accept="image/png image/jpeg" name="image" id="image-input" required>
-      <input type="submit" value="Create Item">
+      <input class="btn btn-primary" type="submit" value="Create Item">
     </form>
 {% endblock %}

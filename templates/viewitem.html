@@ -8,18 +8,18 @@
 
 {% block body%}
   <div class="content">
-    <div class="content-left">
+    <div class="content-left bg-secondary">
       <img class="image" src="{{ image }}" alt="item image">
       <img class="qr hide" src="{{ qr }}" alt="qr code for this page">
-      <button onclick="handleImgToggle()">switch</button>
+      <button class="btn btn-primary" onclick="handleImgToggle()">Toggle Image</button>
     </div>
     <span></span>
-    <div class="content-right">
+    <div class="content-right bg-secondary">
       <h1>Item Info</h1>
       <h2>Item:<br>{{ name }}</h2>
       <h3>Description:<br>{{ description }}</h3>
       <h4>Ingredients:<br>{{ ingredients }}</h4>
-      <a href="/dashboard">&lt; back</a>
+      <a class="btn btn-primary" href="/dashboard">&lt; back</a>
     </div>
   </div>
 {% endblock %}

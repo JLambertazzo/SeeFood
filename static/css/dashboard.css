@@ -7,12 +7,14 @@
 
 .content div {
   box-shadow: #e0e0e0 2px 2px 2px 0;
-  padding: 5px;
+  padding: 15px;
   background: black;
   color: white;
   margin: 10px;
+  border-radius: 15px;
+  height: min-content;
 }
 
-.content-left {
-  height: 50%;
+.content a {
+  color: black;
 }

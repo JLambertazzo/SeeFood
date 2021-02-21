@@ -7,28 +7,28 @@
 {% endblock %}
 
 {% block body %}
-    <div class="content">
+    <div class="content bg-secondary">
       <div class="control">
-        <button onclick="handleShowRestRegister()">Register as a Restaurant</button>
+        <button type="button" class="btn btn-primary" onclick="handleShowRestRegister()">Register as a Restaurant</button>
         <p>Already have an account? <a href="javascript:;" onclick="handleShowRestLogin()">Log In</a></p>
       </div>
       <form class="rest-register hide" action="/api/restaurants" method="POST">
-        <button onclick="handleHideRestRegister()">&lt; back</button>
-        <label for="name">Restaurant Name:</label>
+        <button type="button" class="btn btn-primary"  onclick="handleHideRestRegister()">&lt; back</button>
+        <label style="color: white;" for="name">Restaurant Name:</label>
         <input type="text" name="name" required />
-        <label for="description">Restaurant Description:</label>
+        <label style="color: white;" for="description">Restaurant Description:</label>
         <textarea name="description" required></textarea>
-        <label for="password">Password:</label>
+        <label style="color: white;" for="password">Password:</label>
         <input type="password" name="password" required />
-        <input type="submit" value="Register" />
+        <input class="btn btn-primary" type="submit" value="Register" />
       </form>
       <form class="rest-login hide" action="/api/restaurants" method="GET">
-        <button onclick="handleHideRestLogin()">&lt; back</button>
-        <label for="name">Restaurant Name:</label>
+        <button type="button" class="btn btn-primary"  onclick="handleHideRestLogin()">&lt; back</button>
+        <label style="color: white;" for="name">Restaurant Name:</label>
         <input type="text" name="name" required />
-        <label for="password">Password:</label>
+        <label style="color: white;" for="password">Password:</label>
         <input type="password" name="password" required />
-        <input type="submit" value="Login" />
+        <input class="btn btn-primary"  type="submit" value="Login" />
       </form>
     </div>
 {% endblock %}

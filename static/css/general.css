@@ -12,9 +12,17 @@ nav, footer {
   align-items: center;
   background: black;
   color: white;
+  padding: 15px;
+}
+
+footer a {
+  color: ivory;
 }
 
 main {
   display: grid;
   place-items: center;
+  background-image: url('https://previews.123rf.com/images/redspruce/redspruce1409/redspruce140900015/32280224-doodle-food-icons-seamless-background.jpg');
+  background-color: #e0e0e0;
+  background-blend-mode: overlay;
 }

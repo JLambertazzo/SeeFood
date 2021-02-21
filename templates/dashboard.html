@@ -7,19 +7,19 @@
 
 {% block body %}
   <div class="content">
-    <div class="content-left">
+    <div class="content-left bg-secondary">
       <h1>Restaurant:<br>{{ name }}</h1>
       <h2>Description:<br>{{ description }}</h2>
     </div>
     <span></span>
-    <div class="content-right">
+    <div class="content-right bg-secondary">
       <h1>Items:</h1>
       <ul>
         {% for item in items %}
-          <li>Name: {{ item.name }}, Description: {{ item.description }}<br><a href="/viewitem/{{ item.id }}">view</a><br><a href="/edititem/{{ item.id }}">edit</a></li>
+          <li>Name: {{ item.name }}<br>Description: {{ item.description }}<br><a class="btn btn-light btn-sm" href="/viewitem/{{ item.id }}">view</a> <a class="btn btn-light btn-sm" href="/edititem/{{ item.id }}">edit</a></li>
         {% endfor %}
       </ul>
-      <a href='/newitem'>Add Item</a>
+      <a class="btn btn-light" href='/newitem'>Add Item</a>
     </div>
   </div>
 {% endblock %}

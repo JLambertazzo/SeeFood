@@ -7,15 +7,21 @@
   <meta name="description" content="See more info about the food you love at your favourite restaurants">
   <meta name="author" content="Julien Bertazzo Lambert">
   <meta name="keywords" content="UofT, UofTHacks, Julien, Bertazzo, Lambert, Food, Flask, Restaurants, Computer Science, HTML, CSS, JavaScript, React, Java, Python">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16x16.png') }}">
+  <link rel="manifest" href="/site.webmanifest">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/themr.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
   {% block head %}{% endblock %}
 </head>
 <body>
-  <nav><h1><a href="/" style="text-decoration: none; color: white;">SeeFood</a></h1></nav>
+  <nav class="navbar bg-primary"><h1><a href="/" style="text-decoration: none; color: white;">SeeFood</a></h1></nav>
   <main>
     {% block body %}{% endblock %}
   </main>
-  <footer>
+  <footer class="bg-primary">
     <h6>Created by <a href="https://www.julienbl.me">Julien Bertazzo Lambert</a> for <a href="https://uofthacks.com/">UofTHacks 2021</a></h6>
   </footer>
 </body>

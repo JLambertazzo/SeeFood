@@ -6,3 +6,11 @@
   border-radius: 15px;
   padding: 15px;
 }
+
+.content * {
+  margin: 5px 0;
+}
+
+.content label {
+  color: white;
+}

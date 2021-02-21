@@ -1,9 +1,13 @@
 .content {
-  padding: 25px;
+  padding: 15px;
   background: #f0f0f0;
   box-shadow: #e0e0e0 2px 2px 2px 0;
   border-radius: 15px;
   transition: all 2s;
+}
+
+.content p, .content a {
+  color: white;
 }
 
 .content div, .content form {
@@ -11,6 +15,11 @@
   flex-direction: column;
   transition: all 2s;
 }
+
+.control *, .rest-register *, .rest-login * {
+  margin: 5px 0;
+}
+
 
 .hide {
   display: none !important;
