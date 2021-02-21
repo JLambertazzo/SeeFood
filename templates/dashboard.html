@@ -16,7 +16,7 @@
       <h1>Items:</h1>
       <ul>
         {% for item in items %}
-          <li>Name: {{ item.name }}, Description: {{ item.description }} <a href="/viewitem/{{ item.id }}">view</a></li>
+          <li>Name: {{ item.name }}, Description: {{ item.description }}<br><a href="/viewitem/{{ item.id }}">view</a><br><a href="/edititem/{{ item.id }}">edit</a></li>
         {% endfor %}
       </ul>
       <a href='/newitem'>Add Item</a>

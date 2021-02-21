@@ -47,26 +47,25 @@ class ImageModel(db.Model):
 
 db.create_all()
 
-restaurant_put_args = reqparse.RequestParser()
-restaurant_put_args.add_argument("name", required=True, type=str, help="Restaurant name was not included")
-restaurant_put_args.add_argument("password", required=True, type=str, help="Password was not included")
-restaurant_put_args.add_argument("description", type=str)
+restaurant_post_args = reqparse.RequestParser()
+restaurant_post_args.add_argument("name", required=True, type=str, help="Restaurant name was not included")
+restaurant_post_args.add_argument("password", required=True, type=str, help="Password was not included")
+restaurant_post_args.add_argument("description", type=str)
 
 restaurant_patch_args = reqparse.RequestParser()
 restaurant_patch_args.add_argument("name", type=str)
 restaurant_patch_args.add_argument("password", type=str)
 restaurant_patch_args.add_argument("description", type=str)
 
-item_put_args = reqparse.RequestParser()
-item_put_args.add_argument("restaurant", required=True, type=str, help='Restaurant id was not included')
-item_put_args.add_argument("name", required=True, type=str, help='Item name was not included')
-item_put_args.add_argument("description", type=str)
-item_put_args.add_argument("ingredients", type=str)
-item_put_args.add_argument("image", type=werkzeug.datastructures.FileStorage, location='files')
-item_put_args.add_argument("qr", type=str)
+item_post_args = reqparse.RequestParser()
+item_post_args.add_argument("restaurant", required=True, type=str, help='Restaurant id was not included')
+item_post_args.add_argument("name", required=True, type=str, help='Item name was not included')
+item_post_args.add_argument("description", type=str)
+item_post_args.add_argument("ingredients", type=str)
+item_post_args.add_argument("image", type=werkzeug.datastructures.FileStorage, location='files')
+item_post_args.add_argument("qr", type=str)
 
 item_patch_args = reqparse.RequestParser()
-item_patch_args.add_argument("restaurant", type=str)
 item_patch_args.add_argument("name", type=str)
 item_patch_args.add_argument("description", type=str)
 item_patch_args.add_argument("ingredients", type=str)
@@ -169,7 +168,7 @@ class Items(Resource):
 class NewRestaurant(Resource):
     @marshal_with(restaurant_fields)
     def post(self):
-        args = restaurant_put_args.parse_args()
+        args = restaurant_post_args.parse_args()
         found = RestaurantModel.query.filter_by(name=args['name']).first()
         if found:
             abort(409, message="Restaurant witht this name already exists")
@@ -184,7 +183,7 @@ class NewRestaurant(Resource):
     # handle login
     @marshal_with(restaurant_fields)
     def get(self):
-        args = restaurant_put_args.parse_args()
+        args = restaurant_post_args.parse_args()
         found = RestaurantModel.query.filter_by(name=args['name']).first()
         if not found:
             abort(404, message="restaurant not found")
@@ -201,7 +200,7 @@ class NewRestaurant(Resource):
 class NewItem(Resource):
     @marshal_with(item_fields)
     def post(self):
-        args = item_put_args.parse_args()
+        args = item_post_args.parse_args()
         found = ItemModel.query.filter_by(restaurant=args['restaurant'], name=args['name']).first()
         if found:
             abort(409, message="You already have an item with this name")
@@ -272,15 +271,29 @@ def newitempage():
 @app.route('/viewitem/<string:id>')
 def viewitempage(id):
     found = ItemModel.query.filter_by(id=id).first()
+    if not session or not session['name']:
+        return redirect('/', 301)
+    rest = RestaurantModel.query.filter_by(name=session['name']).first()
+    if rest.id != found.restaurant:
+        abort(409, message="This item belongs to another restaurant")
     if not found:
         abort(404, message="Item was not found")
-    print(found.image)
     image = ImageModel.query.filter_by(id=found.image).first()
     if not image:
         abort(404, message="Error loading image")
     return render_template('viewitem.html', mimetype=image.mimetype, image=f"/api/image/{image.id}", qr=f"/api/qr/{id}", name=found.name, description=found.description, ingredients=found.ingredients)
 
-
+@app.route('/edititem/<string:id>')
+def edititempage(id):
+    found = ItemModel.query.filter_by(id=id).first()
+    if not session or not session['name']:
+        return redirect('/', 301)
+    rest = RestaurantModel.query.filter_by(name=session['name']).first()
+    if rest.id != found.restaurant:
+        abort(409, message="This item belongs to another restaurant")
+    if not found:
+        abort(404, message="Item was not found")
+    return render_template('edititem.html', id=found.id, name=found.name, description=found.description, ingredients=found.ingredients)
 
 if __name__ == '__main__':
     app.run(debug=True)

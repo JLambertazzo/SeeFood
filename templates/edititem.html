@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <script defer src="{{ url_for('static', filename='js/edititem.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/edititem.css') }}">
+  <title>Edit {{ name }}</title>
+{% endblock %}
+
+{% block body %}
+  <form class="content" targetid="{{ id }}">
+    <label for="name">Item Name:</label>
+    <input type="text" name="name" id="name" value="{{ name }}">
+    <label for="description">Description:</label>
+    <input type="text" name="description" id="description" value="{{ description }}">
+    <label for="ingredients">Ingredients:</label>
+    <input type="text" name="ingredients" id="ingredients" value="{{ ingredients }}">
+    <input type="submit" value="Submit Changes!">
+  </form>
+{% endblock %}
