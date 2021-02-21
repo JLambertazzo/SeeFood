@@ -1,0 +1,19 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  border-radius: 15px;
+}
+
+.content * {
+  margin: 5px 0;
+}
+
+.search-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-form label {
+  color: white;
+}

@@ -15,45 +15,49 @@ import requests
 app = Flask(__name__)
 api = Api(app)
 app.config['SECRET_KEY'] = 'TEMPORARYSECRET'
-local = False
+local = True
 Base = None
+
+dbpass = os.environ.get('DBPASS')
 if local:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
     db = SQLAlchemy(app)
     Base = db.Model
+    Column = db.Column
+    String = db.String
 else:
     Base = declarative_base()
-    engine = create_engine('cockroachdb://julien@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full&sslrootcert=cert/cc-ca.crt&options=--cluster=good-bat-867', echo=True)
+    engine = create_engine(f"cockroachdb://julien:{dbpass}@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full&sslrootcert=cert/cc-ca.crt&options=--cluster=good-bat-867", echo=True)
 
 class RestaurantModel(Base):
     __tablename__ = 'Restaurants'
-    id = db.Column(db.String(100), primary_key=True)
-    name = db.Column(db.String(100), nullable=False, unique=True)
-    password = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(500))
+    id = Column(String(100), primary_key=True)
+    name = Column(String(100), nullable=False, unique=True)
+    password = Column(String(100), nullable=False)
+    description = Column(String(500))
 
     def __repr__(self):
         return f"Restaurant(name={self.name}, description={self.description})"
 
 class ItemModel(Base):
     __tablename__ = 'Items'
-    id = db.Column(db.String(100), primary_key=True)
-    restaurant = db.Column(db.String(100), nullable=False)
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(500))
-    ingredients = db.Column(db.String(500))
-    image = db.Column(db.String(500))
-    qr = db.Column(db.String(500))
+    id = Column(String(100), primary_key=True)
+    restaurant = Column(String(100), nullable=False)
+    name = Column(String(100), nullable=False)
+    description = Column(String(500))
+    ingredients = Column(String(500))
+    image = Column(String(500))
+    qr = Column(String(500))
 
     def __repr__(self):
         return f"Item(restaurant={self.restaurant}, name={self.name}, description={self.description}, ingredients={self.ingredients}, image={self.image}, qr={self.qr})"
 
 class ImageModel(Base):
     __tablename__ = 'Images'
-    id = db.Column(db.String(100), primary_key=True)
-    image = db.Column(db.String(500), unique=True)
-    mimetype = db.Column(db.String(500), nullable=False)
-    name = db.Column(db.String(500), nullable=False)
+    id = Column(String(100), primary_key=True)
+    image = Column(String(500), unique=True)
+    mimetype = Column(String(500), nullable=False)
+    name = Column(String(500), nullable=False)
 
     def __repr__(self):
         return self.name
@@ -228,20 +232,6 @@ class NewItem(Resource):
             iid = str(uuid.uuid1())
             newimage = ImageModel(id=iid, image=args['image'].read(), mimetype=mimetype, name=filename)
             db.session.add(newimage)
-            # upload to echoAR
-            response = requests.post('https://console.echoAR.xyz/upload', data={
-                "key": "solitary-smoke-3045",
-                "email": "jbertazzolambert@gmail.com",
-                "target_type": 0,
-                "hologram_type": 1,
-                "file_image": args['image']
-            }, headers={
-                "Content-Type": "multipart/form-data"
-            })
-            if response.ok:
-                print('successfully sent to echoAR')
-            else:
-                print(response)
         else:
             print('no image given')
 
@@ -251,6 +241,23 @@ class NewItem(Resource):
         db.session.add(item)
         db.session.commit()
         return item, 201
+
+
+class Search(Resource):
+    @marshal_with(item_fields)
+    def get(self, query):
+        results = []
+        name_matches = ItemModel.query.filter_by(name=query).first()
+        desc_matches = ItemModel.query.filter_by(description=query).first()
+        ingr_matches = ItemModel.query.filter_by(ingredients=query).first()
+        if name_matches:
+            return name_matches
+        elif desc_matches:
+            return desc_matches
+        elif ingr_matches:
+            return ingr_matches
+        else:
+            return abort(404, message="no resource found")
 
 class Image(Resource):
     def get(self, id):
@@ -276,6 +283,7 @@ api.add_resource(NewRestaurant, '/api/restaurants')
 api.add_resource(NewItem, '/api/item')
 api.add_resource(Restaurants, '/api/restaurants/<string:id>')
 api.add_resource(Items, '/api/item/<string:id>')
+api.add_resource(Search, '/api/search/<string:query>')
 api.add_resource(Image, '/api/image/<string:id>')
 api.add_resource(QR, '/api/qr/<string:id>')
 
@@ -325,5 +333,9 @@ def edititempage(id):
         abort(404, message="Item was not found")
     return render_template('edititem.html', id=found.id, name=found.name, description=found.description, ingredients=found.ingredients)
 
+@app.route('/search')
+def searchpage():
+    return render_template('search.html')
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

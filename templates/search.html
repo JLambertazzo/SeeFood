@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <script defer src="{{ url_for('static', filename='js/search.js')}}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css')}}">
+  <title>Item Search</title>
+{% endblock %}
+
+{% block body %}
+  <div class='content bg-secondary'>
+    <form class="search-form">
+      <label for="search">Search for:</label>
+      <input type="search" name="search" id="search">
+      <input class="btn btn-primary" type="submit" value="Search">
+    </form>
+  </div>
+{% endblock %}
