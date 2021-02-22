@@ -74,8 +74,8 @@ class _UnityViewPageState extends State<UnityViewPage> {
   UnityViewController unityViewController;
 
   double _sliderValue = 1.0;
-  String _projectKey = 'solitary-smoke-3045';
-  String _entryID = 'ead1c1c5-e9ed-4e9a-ab0a-e4508ddf9a9e';
+  String _projectKey = '<key-goes-here>'
+  String _entryID = '<entry-here>'
 
   @override
   void initState() {
